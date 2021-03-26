@@ -1,0 +1,99 @@
+<link rel="stylesheet" type="text/css" href="stylesheet.css"/> 
+
+<header>
+    <h1 id="title"> Wholesome website : D </h1>
+</header>
+<body>
+<!-- Displays the image and credit! -->
+<button id='newbutton'>Click me</button>
+<p></p>
+<img id="reddit-image" class="center">
+
+<!--Shows the posters url-->
+<p id="Poster"></p>
+
+<!-- Runs the function -->
+
+</body>
+
+<footer id="foot">
+    <p>Please Note i don't own any of these images, below you should find the link to there where photo was sourced</p>
+    <p>Please Note all images are randomly picked from reddit</p>
+    <!-- Genrates the link to the oringal post-->
+    <p id="Link"> Link to orginal post: <a id="link" href="link"> </p>
+
+    
+</footer>
+
+<script>
+
+//Picks a radnom image
+setTimeout(2000);
+const getRandomFromReddit = async () => {
+    const randomData = await fetch('https://www.reddit.com/r/aww/random/.json')
+    const jsonData = await randomData.json()
+    
+//Checks it's not banned
+var banned_check = jsonData[0].data.children[0].banned_at_utc
+    if(banned_check === true){
+        getRandomFromReddit()
+    }
+
+    //checks to see if the author says its text or not
+    var post_hint_check = jsonData[0].data.children[0].data.post_hint
+    if (post_hint_check !== "image"){
+        getRandomFromReddit()
+    }
+  
+    //Checks that the content is SFW
+    var SFW_Check = jsonData[0].data.children[0].data.over_18
+    if (SFW_Check === true){
+        getRandomFromReddit()
+    }
+    
+  
+
+
+    // checks if there is text in it!
+    var check_not_tex = jsonData[0].data.children[0].data.selftext
+    if (check_not_tex !== ""){
+        getRandomFromReddit()
+    }
+
+    // Makes sure it's not a video
+    var video_check = jsonData[0].data.children[0].data.is_video
+    if (video_check === true){
+        getRandomFromReddit()
+    }
+
+    //checks its a reddit domain 
+    var reddit_link = jsonData[0].data.children[0].data.s_reddit_media_domain
+    if (reddit_link === false){
+        getRandomFromReddit()
+    }
+    // Genrates the image and Credit so it can be dsipalys 
+    
+    else{
+    document.getElementById('reddit-image').src = jsonData[0].data.children[0].data.url
+    //Used ti genrate credit
+    var part_1_url = jsonData[0].data.children[0].data.permalink
+    var url_credit = "https://www.reddit.com"+part_1_url
+    console.log(url_credit);
+    var credit = jsonData[0].data.children[0].data.author
+    var Give_credit = "Credit: u/" + credit
+   document.getElementById("Poster").innerHTML = Give_credit;
+   document.getElementById("link").innerHTML = url_credit;
+   document.getElementById("link").href = url_credit;
+    }
+  
+}
+        
+
+//Reacts to the button being pressed 
+var genration = document.getElementById("newbutton");
+genration.addEventListener('click', getRandomFromReddit);
+
+//Pre-loads the image
+//getRandomFromReddit()
+getRandomFromReddit()
+</script>
